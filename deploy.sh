@@ -5,12 +5,13 @@
 APP_VERSION=1.0
 TIMESTAMP=20210118001006
 DEPLOY_ENV=prd
-DOCKER_REPOSITORY=
+DOCKER_REPOSITORY=$DOCKER_USER
 
 # 2. commit will push docker image to repository
 function commit() {
     local IMAGE=$1
     echo "docker push image : $DOCKER_REPOSITORY/$IMAGE:$DEPLOY_ENV-$APP_VERSION.$TIMESTAMP"
+    docker login -u $DOCKER_USER -p $DOCKER_PASS
     docker push $DOCKER_REPOSITORY/$IMAGE:$DEPLOY_ENV-$APP_VERSION.$TIMESTAMP
 }
 
