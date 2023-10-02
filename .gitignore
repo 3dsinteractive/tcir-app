@@ -1,0 +1,12 @@
+go.mod
+go.sum
+dockers
+main
+vendor
+.DS_Store
+access.log
+error.log
+out-tcir.yml
+out-db.yml
+out-util.yml
+out-mon.yml
