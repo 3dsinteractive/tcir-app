@@ -9,13 +9,13 @@ function test_api() {
         /usr/local/go/bin/go mod tidy
         /usr/local/go/bin/go get
         /usr/local/go/bin/go mod vendor
-        /usr/local/go/bin/go test . --run TestMainTestSuite
+        /usr/local/go/bin/go test . --run TestMainFailTestSuite
     else 
         go mod init automationworkshop/main
         go mod tidy
         go get
         go mod vendor
-        go test . --run TestMainTestSuite
+        go test . --run TestMainFailTestSuite
     fi
 }
 
