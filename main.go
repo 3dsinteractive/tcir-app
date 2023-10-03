@@ -4,6 +4,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -41,7 +42,21 @@ func startRegisterAPI(ms *Microservice, cfg IConfig) {
 
 		// 2. Generate citizenID and send it to MQ
 		//    The citizen id should be received from client, but for code to be easy to read, we just create it
-		citizenID := randString()
+		// To be able to test, instead of call randString() directly
+		// we inject Random struct to IRandom argument
+		// citizenID := randString()
+
+		rnd := NewRandom()
+		return onPostClient(ctx, cfg, rnd)
+	})
+}
+
+// This onPostClient accept all arguments as interface, so we can mock and test all logic using unit test
+func onPostClient(ctx IContext, cfg IConfig, rnd IRandom) error {
+	citizenID := rnd.Random()
+
+	startWithZero := strings.HasPrefix(citizenID, "0")
+	if !startWithZero && len(citizenID) > 0 {
 		citizen := map[string]interface{}{
 			"citizen_id": citizenID,
 		}
@@ -51,15 +66,19 @@ func startRegisterAPI(ms *Microservice, cfg IConfig) {
 			ctx.Log(err.Error())
 			return err
 		}
-
-		// 3. Response citizenID
 		status := map[string]interface{}{
 			"status":     "success",
 			"citizen_id": citizenID,
 		}
 		ctx.Response(http.StatusOK, status)
-		return nil
-	})
+	} else {
+		status := map[string]interface{}{
+			"status": "failed",
+		}
+		ctx.Response(http.StatusOK, status)
+	}
+
+	return nil
 }
 
 func startMailConsumer(ms *Microservice, cfg IConfig) {
